@@ -3,8 +3,8 @@
 KampalaWatch is my first fullstack project. It is a website where you can watch YouTube in sync with your friends.
 
 ## Stack
-Backend & REST API: Django
-Frontedn: ReactJS (native)
+- Backend & REST API: Django
+- Frontedn: ReactJS (native)
 
 ## Features
  - Adding friends
