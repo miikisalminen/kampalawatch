@@ -1,0 +1,9 @@
+.modal-80vh {
+  width: 80%;
+  max-width: 1200px !important;
+  min-width: 900px !important;
+}
+
+.modal-50vh {
+  width: 50%;
+}
