@@ -24,4 +24,4 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 class FriendshipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ["requesting_username"]
+        fields = ["requesting_username", "notif_type", "room_name"]

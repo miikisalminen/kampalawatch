@@ -43,7 +43,7 @@ class DashBoard extends React.Component {
       .catch((err) => {});
     // Get all friendrequests
     axios
-      .get("http://localhost:8000/api/get_friendrequests", config)
+      .get("http://localhost:8000/api/get_notifications", config)
       .then((res) => {
         let result = eval(res.data);
         this.setState({ notifs: result });
@@ -74,7 +74,11 @@ class DashBoard extends React.Component {
         <ColumnContainer style={{ width: "25%" }}>
           <Header>Notifications</Header>
           {this.state.notifs.map((notif) => (
-            <NotifCard name={notif.requesting_user} />
+            <NotifCard
+              name={notif.requesting_user}
+              typeOf={notif.type_of}
+              room={notif.room}
+            />
           ))}
         </ColumnContainer>
       </div>

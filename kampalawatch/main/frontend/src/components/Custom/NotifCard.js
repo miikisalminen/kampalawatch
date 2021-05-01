@@ -29,8 +29,10 @@ export default class NotifCard extends Component {
 
     let data = JSON.stringify({
       requesting_username: this.props.name,
+      notif_type: this.props.typeOf,
+      room_name: this.props.room,
     });
-
+    console.log(data);
     axios
       .post("http://localhost:8000/api/create_friendship", data, {
         headers: {
@@ -53,7 +55,9 @@ export default class NotifCard extends Component {
       >
         {x ? (
           <CardContainer show={this.state.show}>
-            <Header>Friendrequest from {this.props.name}</Header>
+            <Header>
+              {this.props.typeOf} from {this.props.name} to {this.props.room}
+            </Header>
             <Button primary onClick={this.accept}>
               Accept
             </Button>

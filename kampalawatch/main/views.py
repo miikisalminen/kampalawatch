@@ -64,7 +64,7 @@ class RoomListCreate(generics.ListCreateAPIView):
 class FriendRequestCreate(APIView):
     serializer_class = FriendRequestSerializer
 
-    # Get all users except the one who made the request
+    # Get all users except the one who made the request and his friends
     def get(self, request):
 
         query = User.objects.exclude(username=request.user.username).values("username")
@@ -93,15 +93,21 @@ class FriendRequestCreate(APIView):
             return Response(serializer.data)
 
 
-class FriendRequestGet(APIView):
-    # Get the users receieved FriendRequests
+class NotificationGet(APIView):
+    # Get the users receieved Notifications
     def get(self, request):
-        usernames = []
+        data = []
         query = Notification.objects.filter(receiving_user=request.user)
         for i in query:
-            usernames.append({"requesting_user": i.requesting_user.username})
+            data.append(
+                {
+                    "requesting_user": i.requesting_user.username,
+                    "type_of": i.notif_type,
+                    "room": i.room.name,
+                }
+            )
 
-        return Response(json.dumps(usernames))
+        return Response(json.dumps(data))
 
 
 class FriendshipCreate(APIView):
@@ -109,32 +115,53 @@ class FriendshipCreate(APIView):
     serializer_class = FriendshipSerializer
 
     def post(self, request):
+        print(request.data)
         serializer = FriendshipSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-
-            # Add to receivers friends
-            this_friendship = Friendship.objects.get(this_user=request.user)
-            this_friendship.friends.add(
-                User.objects.get(username=serializer.data["requesting_username"])
-            )
-            this_friendship.save()
-
-            # Add to requesters friends
-            other_friendship = Friendship.objects.get(
-                this_user=User.objects.get(
-                    username=serializer.data["requesting_username"]
+            
+            # If the notification is a friendrequest
+            if serializer.data["notif_type"] == "Friendrequest":
+                # Add to receivers friends
+                this_friendship = Friendship.objects.get(this_user=request.user)
+                this_friendship.friends.add(
+                    User.objects.get(username=serializer.data["requesting_username"])
                 )
-            )
-            other_friendship.friends.add(request.user)
-            other_friendship.save()
+                this_friendship.save()
 
-            # Delete friendrequest
-            friend_req = Notification.objects.get(
-                requesting_user=User.objects.get(
-                    username=serializer.data["requesting_username"]
-                ),
-                receiving_user=request.user,
-            )
-            friend_req.delete()
+                # Add to requesters friends
+                other_friendship = Friendship.objects.get(
+                    this_user=User.objects.get(
+                        username=serializer.data["requesting_username"]
+                    )
+                )
+                other_friendship.friends.add(request.user)
+                other_friendship.save()
 
-            return Response(serializer.data)
+                # Delete friendrequest
+                friend_req = Notification.objects.get(
+                    requesting_user=User.objects.get(
+                        username=serializer.data["requesting_username"]
+                    ),
+                    receiving_user=request.user,
+                )
+                friend_req.delete()
+            
+            # If the notification is an invite
+            elif serializer.data["notif_type"] == "Invite":
+                # Add user to room
+                this_room = Room.objects.get(name=serializer.data["room_name"])
+
+                this_room.participants.add(request.user)
+                this_room.save()
+
+                # Delete invite
+                invite = Notification.objects.get(
+                    notif_type="Invite",
+                    requesting_username=serializer.data["requesting_username"],
+                    receiving_user=request.user,
+                    room_name=serializer.data["room_name"],
+                )
+
+                invite.delete()
+
+        return Response(serializer.data)

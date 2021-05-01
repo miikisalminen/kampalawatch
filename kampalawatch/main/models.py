@@ -7,14 +7,16 @@ from django.dispatch import receiver
 AUTH_USER_MODEL = getattr(settings, "AUTH_USER_MODEL", "auth.User")
 
 # Create your models here.
-class React(models.Model):
-    name = models.CharField(max_length=30)
-    detail = models.CharField(max_length=500)
 
 
 class Room(models.Model):
     name = models.CharField(max_length=30, null=False)
-    creator = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    creator = models.ForeignKey(
+        AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, related_name="creator"
+    )
+    participants = models.ManyToManyField(
+        AUTH_USER_MODEL, blank=True, related_name="participants"
+    )
 
     # Youtube video ID
     current_video = models.CharField(max_length=11, default="")
@@ -51,17 +53,18 @@ class Notification(models.Model):
     requesting_username = models.CharField(max_length=50, null=True)
 
     notif_type = models.CharField(
-        max_length=3,
+        max_length=13,
         choices=(
-            ("LKE", "Like"),
-            ("COM", "Comment"),
-            ("INV", "Invite"),
-            ("REQ", "Friendrequest"),
+            ("Like", "Like"),
+            ("Comment", "Comment"),
+            ("Invite", "Invite"),
+            ("Friendrequest", "Friendrequest"),
         ),
         default="INV",
     )
 
     room = models.ForeignKey(Room, on_delete=models.CASCADE, blank=True, null=True)
+    room_name = models.CharField(max_length=30, blank=True, default="Anonymous room")
 
     def __str__(self):
         return str(

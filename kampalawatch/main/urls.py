@@ -18,7 +18,7 @@ urlpatterns = [
     path("api/rooms", RoomListCreate.as_view()),
     # API Endpoint(s) for managing Friendrequests
     path("api/create_friendrequest", FriendRequestCreate.as_view()),
-    path("api/get_friendrequests", FriendRequestGet.as_view()),
+    path("api/get_notifications", NotificationGet.as_view()),
     # API Endpoint for managing Friendships
     path("api/create_friendship", FriendshipCreate.as_view()),
     # React template

@@ -17,9 +17,17 @@ export default class RoomCard extends Component {
     show: false,
     setShow: false,
     video: "",
+    videoIdInput: "",
     title: "N/A",
     delete: false,
   };
+
+  afterSubmission(e) {
+    e.preventDefault();
+    this.setState({
+      video: this.state.videoIdInput,
+    });
+  }
 
   handleInput = (e) => {
     try {
@@ -29,7 +37,7 @@ export default class RoomCard extends Component {
     }
 
     this.setState({
-      [e.target.name]: videoId,
+      videoIdInput: videoId,
     });
   };
 
@@ -87,15 +95,18 @@ export default class RoomCard extends Component {
               onStateChange={this.setTitle}
             />
 
-            <form>
+            <form onSubmit={(e) => this.afterSubmission(e)}>
               <Input
                 type="text"
                 placeholder="YouTube URL"
                 name="video"
                 onChange={this.handleInput}
               />
+              <Button primary type="submit" style={{ float: "left" }}>
+                Play
+              </Button>
             </form>
-            <Button variant="secondary" onClick={this.leave}>
+            <Button onClick={this.leave} style={{ float: "right" }}>
               Close
             </Button>
           </div>
