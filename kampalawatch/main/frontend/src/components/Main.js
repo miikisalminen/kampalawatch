@@ -26,7 +26,7 @@ class Main extends React.Component {
     };
 
     axios
-      .get("http://localhost:8000/api/", config)
+      .get("http://localhost:8000/api/auth", config)
       .then((res) => {
         this.setState({ user: res.data });
       })

@@ -22,7 +22,7 @@ class SignUpForm extends React.Component {
     e.preventDefault();
 
     axios
-      .post("http://localhost:8000/api/", {
+      .post("http://localhost:8000/api/auth", {
         username: this.state.username,
         password: this.state.password,
         email: this.state.email,

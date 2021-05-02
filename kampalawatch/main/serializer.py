@@ -15,6 +15,12 @@ class RoomSerializer(serializers.ModelSerializer):
         fields = ["name", "delete"]
 
 
+class UpdateRoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = ["current_video", "current_time", "name"]
+
+
 class FriendRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification

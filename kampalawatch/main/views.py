@@ -45,18 +45,43 @@ class RoomListCreate(generics.ListCreateAPIView):
 
     # Returns the Rooms the user is the creator of
     def get(self, request):
-        query = Room.objects.filter(creator=request.user.id).values("id", "name")
+        query = Room.objects.filter(creator=request.user.id).values(
+            "name", "creator", "current_video"
+        )
         return Response(json.dumps(list(query)))
 
     # Creating a new Room
     def post(self, request):
-        print(request.data)
         serializer = RoomSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             new_room = Room.objects.create(
                 name=serializer.data["name"], creator=request.user
             )
             new_room.save()
+
+            return Response(serializer.data)
+
+
+class GetFriendRooms(APIView):
+    def get(self, request):
+        data = []
+        query = Room.objects.filter(participants=request.user.id)
+        for i in query:
+            data.append({"name": i.name, "id": i.id, "creator": i.creator.username})
+        return Response(json.dumps(data))
+
+
+class RoomUpdate(APIView):
+    serializer_class = UpdateRoomSerializer
+
+    def post(self, request):
+        serializer = UpdateRoomSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            this_room = Room.objects.get(name=serializer.data["name"])
+            this_room.current_video = serializer.data["current_video"]
+            this_room.current_time = serializer.data["current_time"]
+
+            this_room.save()
 
             return Response(serializer.data)
 
@@ -118,7 +143,7 @@ class FriendshipCreate(APIView):
         print(request.data)
         serializer = FriendshipSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            
+
             # If the notification is a friendrequest
             if serializer.data["notif_type"] == "Friendrequest":
                 # Add to receivers friends
@@ -145,7 +170,7 @@ class FriendshipCreate(APIView):
                     receiving_user=request.user,
                 )
                 friend_req.delete()
-            
+
             # If the notification is an invite
             elif serializer.data["notif_type"] == "Invite":
                 # Add user to room
