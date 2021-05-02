@@ -86,6 +86,20 @@ class RoomUpdate(APIView):
             return Response(serializer.data)
 
 
+class UpdateRoomTime(APIView):
+    serializer_class = UpdateRoomTimeSerializer
+
+    def post(self, request):
+        serializer = UpdateRoomTimeSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            this_room = Room.objects.get(name=serializer.data["name"])
+            this_room.current_time = serializer.data["current_time"]
+
+            this_room.save()
+
+            return Response(serializer.data)
+
+
 class FriendRequestCreate(APIView):
     serializer_class = FriendRequestSerializer
 

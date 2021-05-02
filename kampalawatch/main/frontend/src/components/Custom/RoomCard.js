@@ -64,9 +64,37 @@ export default class RoomCard extends Component {
     });
   };
 
-  beginPlay = (e) => {};
+  beginPlay = (e) => {
+    var intervalId = setInterval(function () {
+      let data = JSON.stringify({
+        current_time: Math.floor(e.target.getCurrentTime()),
+        name: "monke video",
+      });
+      console.log(data);
+      axios
+        .post("http://localhost:8000/api/update_room_time", data, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("accessToken"),
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {})
+        .catch((err) => {});
 
-  updateTime = (e) => {};
+      //console.log(e.target.getCurrentTime());
+    }, 1000);
+
+    this.setState({ intervalId: intervalId });
+  };
+
+  pausePlay = (e) => {
+    console.log("paused");
+    clearInterval(this.state.intervalId);
+  };
+
+  updateTime(e) {
+    console.log("test");
+  }
 
   join = () => {
     this.setState({ show: true, video: this.props.currentVideo });
@@ -96,9 +124,7 @@ export default class RoomCard extends Component {
     */
     return (
       <CardContainer>
-        <Header>
-          {this.props.name} made by {this.props.creator}
-        </Header>
+        <Header>{this.props.name}</Header>
         <Button primary onClick={this.join}>
           Join
         </Button>
@@ -116,6 +142,7 @@ export default class RoomCard extends Component {
               opts={opts}
               onStateChange={this.setTitle}
               onPlay={this.beginPlay}
+              onPause={this.pausePlay}
             />
 
             <form onSubmit={(e) => this.afterSubmission(e)}>
