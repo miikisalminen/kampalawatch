@@ -4,6 +4,7 @@ KampalaWatch is my first fullstack project. It is a website where you can watch 
 
 ## Stack
 - Backend & REST API: Django
+- Websocket handling: Django Channels 3
 - Frontend: ReactJS (native)
 - Authentication: JWT
 
