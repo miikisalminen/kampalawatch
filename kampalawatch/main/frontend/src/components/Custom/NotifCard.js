@@ -34,7 +34,7 @@ export default class NotifCard extends Component {
     });
     console.log(data);
     axios
-      .post("http://localhost:8000/api/create_friendship", data, {
+      .post("http://127.0.0.1:8000/api/create_friendship", data, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("accessToken"),
           "Content-Type": "application/json",

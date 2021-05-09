@@ -35,7 +35,7 @@ class DashBoard extends React.Component {
 
     // Get all rooms
     axios
-      .get("http://localhost:8000/api/rooms", config)
+      .get("http://127.0.0.1:8000/api/rooms", config)
       .then((res) => {
         let result = eval(res.data);
         this.setState({ rooms: result });
@@ -43,7 +43,7 @@ class DashBoard extends React.Component {
       .catch((err) => {});
 
     axios
-      .get("http://localhost:8000/api/get_friendrooms", config)
+      .get("http://127.0.0.1:8000/api/get_friendrooms", config)
       .then((res) => {
         console.log("result:" + res);
         let result = eval(res.data);
@@ -53,7 +53,7 @@ class DashBoard extends React.Component {
 
     // Get all friendrequests
     axios
-      .get("http://localhost:8000/api/get_notifications", config)
+      .get("http://127.0.0.1:8000/api/get_notifications", config)
       .then((res) => {
         let result = eval(res.data);
         this.setState({ notifs: result });

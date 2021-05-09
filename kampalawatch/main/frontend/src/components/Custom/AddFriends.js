@@ -23,7 +23,7 @@ export default class AddFriends extends Component {
     };
 
     axios
-      .get("http://localhost:8000/api/create_friendrequest", config)
+      .get("http://127.0.0.1:8000/api/create_friendrequest", config)
       .then((res) => {
         let result = eval(res.data);
         this.setState({ users: result });

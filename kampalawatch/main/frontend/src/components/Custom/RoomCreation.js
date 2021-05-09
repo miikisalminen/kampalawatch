@@ -31,7 +31,7 @@ export default class RoomCreation extends Component {
     });
 
     axios
-      .post("http://localhost:8000/api/rooms", data, {
+      .post("http://127.0.0.1:8000/api/rooms", data, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("accessToken"),
           "Content-Type": "application/json",

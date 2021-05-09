@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
+import { w3cwebsocket as W3CWebSocket } from "websocket";
 
 import BoxContainer from "../Containers/BoxContainer";
 import CardContainer from "../Containers/CardContainer";
@@ -32,7 +33,7 @@ export default class RoomCard extends Component {
     });
     console.log(data);
     axios
-      .post("http://localhost:8000/api/update_room", data, {
+      .post("http://127.0.0.1:8000/api/update_room", data, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("accessToken"),
           "Content-Type": "application/json",
@@ -64,33 +65,9 @@ export default class RoomCard extends Component {
     });
   };
 
-  beginPlay = (e) => {
-    var intervalId = setInterval(function () {
-      let data = JSON.stringify({
-        current_time: Math.floor(e.target.getCurrentTime()),
-        name: "monke video",
-      });
-      console.log(data);
-      axios
-        .post("http://localhost:8000/api/update_room_time", data, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("accessToken"),
-            "Content-Type": "application/json",
-          },
-        })
-        .then((res) => {})
-        .catch((err) => {});
+  beginPlay = (e) => {};
 
-      //console.log(e.target.getCurrentTime());
-    }, 1000);
-
-    this.setState({ intervalId: intervalId });
-  };
-
-  pausePlay = (e) => {
-    console.log("paused");
-    clearInterval(this.state.intervalId);
-  };
+  pausePlay = (e) => {};
 
   updateTime(e) {
     console.log("test");
@@ -98,10 +75,25 @@ export default class RoomCard extends Component {
 
   join = () => {
     this.setState({ show: true, video: this.props.currentVideo });
+
+    var socketPath =
+      "ws://" +
+      window.location.host +
+      "/ws/" +
+      this.props.name.replace(/ /g, "_") +
+      "/";
+    const roomSocket = new WebSocket(socketPath);
+
+    this.setState({ roomSocket: roomSocket });
+
+    roomSocket.onopen = function (event) {
+      console.log("WebSocket is open now.");
+    };
   };
+
   leave = () => {
     this.setState({ show: false });
-    clearInterval(this.state.intervalId);
+    this.state.roomSocket.close();
   };
 
   render() {
@@ -113,15 +105,7 @@ export default class RoomCard extends Component {
         autoplay: 0,
       },
     };
-    // HOW I PLAN ON DOING THESE ROOM SHIT
-    /*
-      1. Have an interval run about every second
-        a. check time elapsed, updating django model when needed
-        b. if the time elapsed is the same as last time, dont update = no change
-      2. In the future when implementing 'Friend' Roomcards, restrict video playing
-          from guests and have an interval running checking for the current time
-        a. If the latency between friend and creator is > ~3s synchronize with seekTo()
-    */
+
     return (
       <CardContainer>
         <Header>{this.props.name}</Header>
